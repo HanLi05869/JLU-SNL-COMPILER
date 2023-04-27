@@ -1,0 +1,131 @@
+program p
+type t1 = integer;
+var integer v1,v2;
+array [1..20] of integer a;
+procedure
+q(integer i);
+{var integer a;}
+begin
+ a:=i;
+ write(a)
+end
+begin
+ read(v1);
+ if v1<10
+then v1:=v1+10
+else v1:=v1-10
+fi;
+ q(v1)
+end.
+——————词法分析开始——————
+0  0             PROGRAM                NULL
+1  0                  ID                   p
+2  1                TYPE                NULL
+3  1                  ID                  t1
+4  1              ASSIGN                NULL
+5  1             INTEGER                NULL
+6  1                SEMI                NULL
+7  2                 VAR                NULL
+8  2             INTEGER                NULL
+9  2                  ID                  v1
+10  2               COMMA                NULL
+11  2                  ID                  v2
+12  2                SEMI                NULL
+13  3               ARRAY                NULL
+14  3           LMIDPAREN                NULL
+15  3                INTC                   1
+16  3          UNDERRANGE                NULL
+17  3                INTC                  20
+18  3           RMIDPAREN                NULL
+19  3                  OF                NULL
+20  3             INTEGER                NULL
+21  3                  ID                   a
+22  3                SEMI                NULL
+23  4           PROCEDURE                NULL
+24  5                  ID                   q
+25  5              LPAREN                NULL
+26  5             INTEGER                NULL
+27  5                  ID                   i
+28  5              RPAREN                NULL
+29  5                SEMI                NULL
+30  7               BEGIN                NULL
+31  8                  ID                   a
+32  8              ASSIGN                NULL
+33  8                  ID                   i
+34  8                SEMI                NULL
+35  9               WRITE                NULL
+36  9              LPAREN                NULL
+37  9                  ID                   a
+38  9              RPAREN                NULL
+39  10                 END                NULL
+40  11               BEGIN                NULL
+41  12                READ                NULL
+42  12              LPAREN                NULL
+43  12                  ID                  v1
+44  12              RPAREN                NULL
+45  12                SEMI                NULL
+46  13                  IF                NULL
+47  13                  ID                  v1
+48  13                  LT                NULL
+49  13                INTC                  10
+50  14                THEN                NULL
+51  14                  ID                  v1
+52  14              ASSIGN                NULL
+53  14                  ID                  v1
+54  14                PLUS                NULL
+55  14                INTC                  10
+56  15                ELSE                NULL
+57  15                  ID                  v1
+58  15              ASSIGN                NULL
+59  15                  ID                  v1
+60  15               MINUS                NULL
+61  15                INTC                  10
+62  16                  FI                NULL
+63  16                SEMI                NULL
+64  17                  ID                   q
+65  17              LPAREN                NULL
+66  17                  ID                  v1
+67  17              RPAREN                NULL
+68  18                 END                NULL
+69  18                 DOT                NULL
+——————词法分析结束——————
+
+——————语法分析开始——————
+            没有语法错误
+Prok
+    PheadK:p
+    TypeK
+        DecK IntegerK:t1
+    VarK
+        DecK IntegerK:v1,v2
+        DecK Array:a of IntegerK f 1 t 20
+    ProcDeck:q of Type
+        DecK IntegerK:i
+        StmLK:
+            AssignK
+                ExpK IdV: a
+                ExpK IdV: i
+            WriteK
+                ExpK IdV: a
+    StmLK:
+        ReadK
+        IfK
+            ExpK OpK:LT
+                ExpK IdV: v1
+                ExpK ConstK:10
+            AssignK
+                ExpK IdV: v1
+                ExpK OpK:PLUS
+                    ExpK IdV: v1
+                    ExpK ConstK:10
+            AssignK
+                ExpK IdV: v1
+                ExpK OpK:MINUS
+                    ExpK IdV: v1
+                    ExpK ConstK:10
+        CallK
+            ExpK IdV: q
+            ExpK IdV: v1
+——————语法分析结束——————
+
+8 : 赋值号两边不等价

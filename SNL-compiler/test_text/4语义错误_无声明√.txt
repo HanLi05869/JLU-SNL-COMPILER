@@ -1,0 +1,113 @@
+{没有声明的情况}
+program p
+{var integer v1,v2;}
+procedure
+q(integer i);
+var integer a;
+begin
+ a:=i;
+ write(a)
+end
+begin
+ read(v1);
+ if v1<10
+then v1:=v1+10
+else v1:=v1-10
+fi;
+ q(v1)
+end.
+——————词法分析开始——————
+0  0             PROGRAM                NULL
+1  0                  ID                   p
+2  2           PROCEDURE                NULL
+3  3                  ID                   q
+4  3              LPAREN                NULL
+5  3             INTEGER                NULL
+6  3                  ID                   i
+7  3              RPAREN                NULL
+8  3                SEMI                NULL
+9  4                 VAR                NULL
+10  4             INTEGER                NULL
+11  4                  ID                   a
+12  4                SEMI                NULL
+13  5               BEGIN                NULL
+14  6                  ID                   a
+15  6              ASSIGN                NULL
+16  6                  ID                   i
+17  6                SEMI                NULL
+18  7               WRITE                NULL
+19  7              LPAREN                NULL
+20  7                  ID                   a
+21  7              RPAREN                NULL
+22  8                 END                NULL
+23  9               BEGIN                NULL
+24  10                READ                NULL
+25  10              LPAREN                NULL
+26  10                  ID                  v1
+27  10              RPAREN                NULL
+28  10                SEMI                NULL
+29  11                  IF                NULL
+30  11                  ID                  v1
+31  11                  LT                NULL
+32  11                INTC                  10
+33  12                THEN                NULL
+34  12                  ID                  v1
+35  12              ASSIGN                NULL
+36  12                  ID                  v1
+37  12                PLUS                NULL
+38  12                INTC                  10
+39  13                ELSE                NULL
+40  13                  ID                  v1
+41  13              ASSIGN                NULL
+42  13                  ID                  v1
+43  13               MINUS                NULL
+44  13                INTC                  10
+45  14                  FI                NULL
+46  14                SEMI                NULL
+47  15                  ID                   q
+48  15              LPAREN                NULL
+49  15                  ID                  v1
+50  15              RPAREN                NULL
+51  16                 END                NULL
+52  16                 DOT                NULL
+——————词法分析结束——————
+
+——————语法分析开始——————
+            没有语法错误
+Prok
+    PheadK:p
+    ProcDeck:q of Type
+        DecK IntegerK:i
+        VarK
+            DecK IntegerK:a
+        StmLK:
+            AssignK
+                ExpK IdV: a
+                ExpK IdV: i
+            WriteK
+                ExpK IdV: a
+    StmLK:
+        ReadK
+        IfK
+            ExpK OpK:LT
+                ExpK IdV: v1
+                ExpK ConstK:10
+            AssignK
+                ExpK IdV: v1
+                ExpK OpK:PLUS
+                    ExpK IdV: v1
+                    ExpK ConstK:10
+            AssignK
+                ExpK IdV: v1
+                ExpK OpK:MINUS
+                    ExpK IdV: v1
+                    ExpK ConstK:10
+        CallK
+            ExpK IdV: q
+            ExpK IdV: v1
+——————语法分析结束——————
+
+10 : v1 未声明
+11 : v1标识符无声明
+15 : v1标识符无声明
+15 : 参数类型不匹配

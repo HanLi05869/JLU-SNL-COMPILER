@@ -1,0 +1,11 @@
+program _p
+type t = integer;
+var   t    v1;
+         char   v2;
+begin
+    read(v1);
+    v1 :=v1*10;
+    v1 = "d";
+    v2:='a';
+    write(v1);
+end.

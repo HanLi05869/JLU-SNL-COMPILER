@@ -1,0 +1,51 @@
+program bubble
+type t=integer;
+z=array [1..20] of integer;
+var integer i,j,num;
+array [1..20] of integer a;
+procedure q(integer num;array [1..20] of integer a);
+var integer i,j,k;
+      integer t;
+      record
+          integer i,j;
+          integer t;
+      end ab;
+begin
+    ab.t:=1;
+    read(i);
+    write(i);
+    q(num,a);
+    while i<num do
+        j:=num-ab.i+1;
+        i:=num-ab.j+1;
+        k:=1;
+        while k<j do
+            if a[k+1] < a[k]
+            then
+                t:=a[k];
+                a[k]:=a[k+1];
+                a[k+1]:=t
+            else a[i]:=0
+            fi;
+            k:=k+1
+        endwh;
+        i:=i+1
+    endwh;
+    return
+end
+
+begin
+    read(num);
+    i:=1;
+    while i<(num+1) do
+        read(j);
+        a[i]:=j;
+        i:=i+1
+    endwh;
+    q(num,a);
+    i:=1;
+    while i<(num+1) do
+        write(a[i]);
+        i:=i+1
+    endwh
+end.

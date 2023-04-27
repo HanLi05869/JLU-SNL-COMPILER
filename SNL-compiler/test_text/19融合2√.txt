@@ -1,0 +1,84 @@
+{
+语义错误种类：
+（1） 标识符的重复定义；
+（2） 无声明的标识符；
+（3） 标识符为非期望的标识符类别（类型标识符，变量标识符，过程名
+标识符）；
+（4） 数组类型下标越界错误； 
+	声明时的下标越界
+	对于使用时的下标越界情况这里不做检查，VS编译器不做检查
+（5） 数组成员变量和域变量的引用不合法；
+（6） 赋值语句的左右两边类型不相容；
+（7） 赋值语句左端不是变量标识符；
+（8） 过程调用中 ，形实参类型不匹配；
+（9） 过程调用中， 形实参个数不相同；
+（10）过程调用语句中，标识符不是过程标识符；
+（11）if 和 while 语句的条件部分不是 bool 类型；
+（12）表达式中运算符的分量的类型不相容。
+}
+
+program p
+{类型声明}
+type int = integer;
+sarray = array[1..10] of integer;
+tarray = array[10..1] of char;		{lineno:24 数组上下界错误}
+stu = record
+  integer a, b;
+  char c, d;
+end;
+
+{变量声明}
+var integer i, j, k;
+sarray sa;
+stu astu;
+integer ax, bx;
+char cx, dx;
+integer ax;			{lineno:36 标识符的重复定义}
+
+{函数声明}
+procedure f(char a);
+type ch=char;
+var ch qaq;			
+      qaq xa;			{lineno:42 非类型标识符}
+begin
+   write(qaq)
+end    
+
+procedure g(char a; var integer b);
+type ch=char;
+var ch qaq;	
+begin
+   write(qaq)
+end    
+
+begin
+o := 0;				{lineno:55 无声明的标识符}
+sa[12] := 15;			
+sa[6+8] := 99;			
+sa[6-8] := 999;			
+astu.c := 30;			{lineno:59 赋值号两端不相容，左char右int}
+astu.ut := 25;			{lineno:60 无此域名}
+int := 99;				{lineno:61 int非变量标识符}
+i := 1;
+j := 2;
+k := 3;
+g(cx, 10);				{lineno 65 形参为变参，实参为值参，不匹配}
+f(i);				{lineno:66 形参实参类型不匹配}
+f(i, j, k);				{lineno:67 参数个数不匹配、类型不匹配}
+ax(i);				{lineno:68 过程调用语句中，标识符不是过程标识符}
+if i < 10
+then i := i + int			{lineno:70 int非变量类型、表达式中运算符的分量的类型不相容}
+else  f(cx)
+fi;
+
+while ax < 10 do
+    bx:=sa[ax];
+    ax := ax + 1
+  endwh;
+
+if i < 10				
+then i := i + 1
+else  f(dx)
+fi;
+i := c				{lineno:83 未声明、赋值号两端不相容}
+end.

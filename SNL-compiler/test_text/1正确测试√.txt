@@ -1,0 +1,68 @@
+program p {yoriko}
+type t=integer;
+var t v1;
+char v2;
+begin
+read(v1);
+v1:=v1+10;
+write(v1)
+end.
+——————词法分析开始——————
+0  0             PROGRAM                NULL
+1  0                  ID                   p
+2  1                TYPE                NULL
+3  1                  ID                   t
+4  1              ASSIGN                NULL
+5  1             INTEGER                NULL
+6  1                SEMI                NULL
+7  2                 VAR                NULL
+8  2                  ID                   t
+9  2                  ID                  v1
+10  2                SEMI                NULL
+11  3                CHAR                NULL
+12  3                  ID                  v2
+13  3                SEMI                NULL
+14  4               BEGIN                NULL
+15  5                READ                NULL
+16  5              LPAREN                NULL
+17  5                  ID                  v1
+18  5              RPAREN                NULL
+19  5                SEMI                NULL
+20  6                  ID                  v1
+21  6              ASSIGN                NULL
+22  6                  ID                  v1
+23  6                PLUS                NULL
+24  6                INTC                  10
+25  6                SEMI                NULL
+26  7               WRITE                NULL
+27  7              LPAREN                NULL
+28  7                  ID                  v1
+29  7              RPAREN                NULL
+30  8                 END                NULL
+31  8                 DOT                NULL
+——————词法分析结束——————
+
+——————语法分析开始——————
+Prok
+    PheadK:p
+    TypeK
+        DecK IntegerK:t
+    VarK
+        DecK IdK:v1 of t
+        DecK Char
+    StmLK:
+        ReadK
+        AssignK
+            ExpK IdV: v1
+            ExpK OpK:PLUS
+                ExpK IdV: v1
+                ExpK ConstK:10
+        WriteK
+            ExpK IdV: v1
+            没有语法错误
+——————语法分析结束——————
+
+
+——————语义分析开始——————
+            没有语义错误
+——————语义分析结束——————

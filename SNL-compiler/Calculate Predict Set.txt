@@ -1,0 +1,192 @@
+1.void ParserLL1::get_mp() {  
+2.    //cout << Production.size() << endl;  
+3.    for (auto i = 0; i < Production.size(); i++) {  
+4.        mp[Production[i].first].push_back(i + 1);  
+5.        vector<LexType> tempVec = Production[i].second;  
+6.        for (int j = 0; j < tempVec.size(); j++)  
+7.        {  
+8.            if (NTSet.find(tempVec[j]) == NTSet.end()) continue;  
+9.            reverse_mp[tempVec[j]].push_back(i + 1);  
+10.        }  
+11.    }  
+12.  
+13.}  
+14.//t为产生式左部  
+15.void ParserLL1::First(LexType t, set<LexType>& s) {  
+16.    if (TTSet.find(t) != TTSet.end()) {  
+17.        s.insert(t);  
+18.        return;  
+19.    }  
+20.  
+21.    vector<int> ProductionId = mp[t];  
+22.  
+23.    for (int i = 0; i < ProductionId.size(); i++) {  
+24.        int id = ProductionId[i] - 1; //104->>103  
+25.        LexType LEFT = Production[id].first;  
+26.        vector<LexType> RIGHT = Production[id].second;  
+27.        //每条产生式的LexType  
+28.        for (int rid = 0; rid < RIGHT.size(); rid++) {  
+29.            set<LexType> temppSet;  
+30.            First(RIGHT[rid], temppSet);  
+31.  
+32.            auto t_it = temppSet.find(LexType::Empty);  
+33.            bool flag = false;//是否找完了  
+34.            if (rid != RIGHT.size() - 1 && t_it != temppSet.end()) {  
+35.                temppSet.erase(t_it);  
+36.            }  
+37.            else flag = true;//没有空，找完了  
+38.  
+39.            //union  
+40.            s.insert(temppSet.begin(), temppSet.end());  
+41.            if (flag) break;  
+42.        }  
+43.  
+44.    }  
+45.}  
+46.  
+47.void ParserLL1::getFirst() {  
+48.  
+49.    for (int i = 0, j = 0; i < Production.size();) {  
+50.        while (j < Production.size() && Production[i].first == Production[j].first)  j++;  
+51.  
+52.        //[i,j)条产生式  
+53.        for (int k = i; k < j; k++) {  
+54.            //cout << k << endl;  
+55.            LexType LEFT = Production[k].first;  
+56.            vector<LexType> RIGHT = Production[k].second;  
+57.            set<LexType> tempSet;  
+58.            //每条产生式的LexType  
+59.            for (int rid = 0; rid < RIGHT.size(); rid++) {  
+60.                set<LexType> temppSet;  
+61.                First(RIGHT[rid], temppSet);  
+62.                auto t_it = temppSet.find(LexType::Empty);  
+63.                bool flag = false;//是否找完了  
+64.                if (rid != RIGHT.size() - 1 && t_it != temppSet.end()) {  
+65.                    temppSet.erase(t_it);  
+66.                }  
+67.                else flag = true;//没有空，找完了  
+68.  
+69.                //union  
+70.                tempSet.insert(temppSet.begin(), temppSet.end());  
+71.                if (flag) break;  
+72.            }  
+73.  
+74.            First_mp[LEFT].insert(tempSet.begin(), tempSet.end());  
+75.        }  
+76.  
+77.        i = j;  
+78.    }  
+79.  
+80.}  
+81.  
+82.void ParserLL1::Follow(LexType t, set<LexType>& s, int cnt) {  
+83.    if (cnt > 20) return;  
+84.    if (TTSet.find(t) != TTSet.end()) {  
+85.        return;  
+86.    }  
+87.    vector<int> ProductionId = reverse_mp[t];  
+88.  
+89.    for (int i = 0; i < ProductionId.size(); i++) {  
+90.        int id = ProductionId[i] - 1;  
+91.        LexType LEFT = Production[id].first;  
+92.        vector<LexType> tempVec = Production[id].second;  
+93.        int j = 0;  
+94.        if (t == LexType::StmList && LEFT == LexType::ConditionalStm) s.insert(LexType::FI);  
+95.        while (j < tempVec.size() && tempVec[j] != t) j++;  
+96.        j++;  
+97.        if (j == tempVec.size()) {  
+98.            set<LexType> temppSet;  
+99.            Follow(LEFT, temppSet, cnt + 1);  
+100.            s.insert(temppSet.begin(), temppSet.end());  
+101.        }  
+102.  
+103.        for (; j < tempVec.size(); j++) {  
+104.            if (TTSet.find(tempVec[j]) != TTSet.end()) {  
+105.                s.insert(tempVec[j]);  
+106.                break;  
+107.            }  
+108.            else {  
+109.                bool  flag = true;  
+110.                set<LexType> temppSet = First_mp[tempVec[j]];  
+111.                auto it_erase = temppSet.find(LexType::Empty);  
+112.                if (it_erase != temppSet.end()) {  
+113.                    temppSet.erase(it_erase);  
+114.                    flag = false;  
+115.                    s.insert(temppSet.begin(), temppSet.end());  
+116.                    if (j + 1 == tempVec.size()) {  
+117.                        set<LexType> tempppSet;  
+118.                        Follow(LEFT, tempppSet, cnt + 1);  
+119.                        s.insert(tempppSet.begin(), tempppSet.end());  
+120.                        break;  
+121.                    }  
+122.                }  
+123.                else s.insert(temppSet.begin(), temppSet.end());  
+124.                if (flag) break;  
+125.            }  
+126.        }  
+127.    }  
+128.}  
+129.  
+130.void ParserLL1::getFollow() {  
+131.    Follow_mp[LexType::Program].insert(LexType::Well);  
+132.  
+133.    for (auto it = reverse_mp.begin(); it != reverse_mp.end(); it++) {  
+134.        //cout << it->second.size()<<"+++" << endl;  
+135.        LexType NT = (LexType)it->first;  
+136.        //vector<int> ProductionId = it->second;//id [1,104]  
+137.        set<LexType> tempSet;  
+138.        Follow(NT, tempSet, 0);  
+139.        Follow_mp[NT].insert(tempSet.begin(), tempSet.end());  
+140.        //cout << "-----" << endl;  
+141.    }  
+142.  
+143.  
+144.}  
+145.  
+146.void ParserLL1::getPredict() {  
+147.  
+148.    for (int i = 0; i < Production.size(); i++) {  
+149.  
+150.        LexType LEFT = Production[i].first;  
+151.        vector<LexType> RIGHT = Production[i].second;  
+152.        set<LexType> tempSet;  
+153.        for (int rid = 0; rid < RIGHT.size(); rid++) {  
+154.  
+155.            if (RIGHT[rid] == LexType::Empty) {  
+156.                tempSet.insert(Follow_mp[LEFT].begin(), Follow_mp[LEFT].end());  
+157.                break;  
+158.            }  
+159.  
+160.  
+161.            if (TTSet.find(RIGHT[rid]) != TTSet.end()   )  
+162.            {  
+163.                tempSet.insert(RIGHT[rid]);  
+164.                break;  
+165.            }  
+166.            else {  
+167.                int flag = true;  
+168.                set<LexType> temppSet = First_mp[RIGHT[rid]];  
+169.                auto it_erase = temppSet.find(LexType::Empty);  
+170.                if ( it_erase != temppSet.end()) {  
+171.                    flag = false;  
+172.                    temppSet.erase(it_erase);  
+173.                    tempSet.insert(temppSet.begin(), temppSet.end());  
+174.                    if (rid + 1 == RIGHT.size()) {  
+175.                        tempSet.insert(Follow_mp[RIGHT[rid]].begin(), Follow_mp[RIGHT[rid]].end());  
+176.                        break;  
+177.                    }  
+178.                }  
+179.                else    tempSet.insert(temppSet.begin(), temppSet.end());  
+180.                if (flag) break;  
+181.            }  
+182.  
+183.        }  
+184.  
+185.        //tempSet 转table  
+186.        for (auto item : tempSet) {  
+187.            table[{LEFT, item} ]=i+1;  
+188.        }  
+189.  
+190.    }  
+191.  
+192.}  

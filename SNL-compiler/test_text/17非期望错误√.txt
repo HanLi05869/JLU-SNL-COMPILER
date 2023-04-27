@@ -1,0 +1,13 @@
+program p {yoriko}
+type t=integer;
+var t v1,v3;
+char v2;
+begin
+read(v3);
+v1:=v1+10;
+p();
+v2();
+v1 := t;
+v3.v1 := v2;
+write(v1)
+end.
